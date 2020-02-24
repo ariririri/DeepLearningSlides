@@ -1,0 +1,354 @@
+\section{機械学習で使われる数学の基礎}
+
+\begin{frame}{この章で扱うこと}
+機械学習で使われる微分や線形代数について扱う.
+\begin{itemize}
+\item 集合や関数の表記
+\item 一変数の微分
+\item 行列の計算
+\item 多変数の微分
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{集合について}
+集合とは要素の集まりのこと。
+\begin{itemize}
+\item  0以上の整数全体: 
+\begin{equation*}
+\{0, 1, 2, 3, 4, \ldots \} =: \mathbb{Z}_{\ge 0}
+\end{equation*}
+\item 与えられた集合から特定の集合を取り出こともできる. \\
+       例) 整数全体のうち2×整数で表せるもの 
+\begin{equation*}
+\{n \in \mathbb{Z}_{\ge 0} \mid n = 2m \}
+\end{equation*}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{関数の表し方}
+高校数学では$y = f(x)$と関数は書かれる。 
+機械学習や大学の数学では関数を以下のように表すことも多い。
+\begin{itemize}
+\item 関数$f: X \to Y$
+\item $X$は定義域
+\item $Y$は終域
+\end{itemize}
+$x$が実数以外を指すことに注意してください。
+\end{frame}
+
+\begin{frame}{(一変数関数の)微分の定義}
+$f:U \to \mathbb{R}, x \in U$に対し、
+  \begin{equation*}
+   \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}
+\end{equation*}
+が存在する時、$f$は$x$で \textbf{微分可能}といいます。
+\end{frame}
+
+
+\begin{frame}{微分可能な関数の例}
+$f(x) = x^2$となる関数$f:\mathbb{R} \to \mathbb{R}$は微分可能
+\begin{proof}
+$f(x+h) - f(x) = 2xh + h^2$より
+\begin{equation*}
+\lim_{h \to 0} \frac{f(x+h) - f(x)}{h} = 2x
+\end{equation*}
+\end{proof}
+
+\end{frame}
+\begin{frame}{微分の線形性}
+$f, g:\mathbb{R} \to \mathbb{R}$が微分可能な時,$\forall a, b \in \mathbb{R}$に対し
+
+  \begin{equation*}
+  af'(x) + bg'(x)  = (af+bg)'(x)
+  \end{equation*}
+
+\end{frame}
+
+\begin{frame}{Remark}
+線形代数の言葉で微分を言い換える
+\begin{itemize}
+\item  微分できる関数のなすベクトル空間を$V$
+\item 微分は$V$から$V$への \textbf{線形写像}
+\end{itemize}
+例 $V = \{ax +b \mid a, b \in \mathbb{R}\}$とする.
+この時$V$の基底として$x, 1$を取ることができる.
+つまり,$f(x) = ax + b$とすると,$f(x)$は$(a, b)$という二次元のベクトルになる.
+
+$f'(x) = a$となるので微分は二次元のベクトル$(0, a)$になる. \\
+よって微分を表す行列は以下となる.
+$$
+\begin{pmatrix}
+0 & 0 \\
+1 & 0 \\
+\end{pmatrix}
+$$
+\end{frame}
+
+\begin{frame}{微分の性質}
+\textbf{積の微分法}
+$f, g$が微分可能な時、
+  \begin{equation*}
+  (fg)' = f'g + fg'
+  \end{equation*}
+
+\textbf{合成関数の微分}
+  $f,g$が微分可能な時、
+  \begin{equation*}
+  (f \circ g)'(x) = f'(g(x))g'(x)
+  \end{equation*}
+
+\end{frame}
+
+\begin{frame}{初等的な関数の微分}
+有名な関数たちの微分の公式を紹介します。
+
+  \begin{align*}
+  \sin' x &= \cos x \\
+  \cos' x &= - \sin x \\
+  (e^{x})' &= e^x \\
+  \log' x &= \frac{1}{x}
+  \end{align*}
+\end{frame}
+
+
+\begin{frame}{微分の求め方}
+結局は初等的な関数の微分を以下で組み合わせて解く
+\begin{itemize}
+\item 合成関数の微分法
+\item 積の微分法
+\item 微分の線形性
+\item 関数の多変数化
+\end{itemize}
+\end{frame}
+
+\begin{frame}{演習}
+\url{https://tutorials.chainer.org/ja/Exercise_Step_01.html}
+4章を4.7までを解いてください
+\end{frame}
+
+\begin{frame}{線形代数}
+線形代数の主役
+\begin{itemize}
+  \item 行列
+  \item ベクトル
+\end{itemize}
+\textbf{ベクトル}: 大きさと向きを持つもの \\
+実際は$\mathbb{R}^n$の元と考える.
+\end{frame}
+
+
+\begin{frame}{ベクトルで重要な量}
+$n$次元ベクトル$x = (x_1,\dots,x_n)$の \textbf{大きさ}
+  \begin{equation*}
+  |x|:= \sqrt{\sum_{i=1}^n x_i^2 }
+  \end{equation*}
+$n$次元ベクトル$x, y$の \textbf{内積}
+\begin{equation*}
+ x \cdot y := \sum_{i=1}^n x_iy_i
+\end{equation*}
+\end{frame}
+
+\begin{frame}{内積の性質}
+$n$次元ベクトル$x, y$のなす角を$\theta$とすると、
+  \begin{equation*}
+   x\cdot y = |x||y| \cos \theta
+  \end{equation*}
+
+証明は三角形の余弦定理の変形により
+\begin{equation*}
+\cos \theta = \frac{|x|^2 + |y|^2 - |x-y|^2}{2 |x| |y|}
+\end{equation*}
+
+\end{frame}
+
+
+\begin{frame}{コーシーシュワルツの不等式}
+上の内積の等式から
+
+\begin{equation*}
+(x \cdot y)^2 = (\sum_{i=1}^n x_iy_i)^2 \le (|x||y|)^2 = (x_1^2 + \ldots, x_n^2)(y_1^2 + \ldots + y_n^2)
+\end{equation*}
+
+\end{frame}
+
+
+\begin{frame}{行列の定義}
+- $2 \times 2$行列$A$とは
+
+\begin{equation*}
+A = \left(
+  \begin{array}{ll}
+  x_{11} & x_{12} \\
+  x_{21} & x_{22} \\
+  \end{array}
+  \right)
+\end{equation*}
+
+\begin{itemize}
+\item 縦にも横にも2個ずつ数値を並べたもの
+\item $n \times m$行列も定義できる。
+\item $A$を$(a_{ij})_{ij}$とも表す。
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{行列の演算}
+$A = \left(
+\begin{array}{ll}
+a_{11} & a_{12} \\
+a_{21} & a_{22} \\
+\end{array}
+\right)$ と $B = \left(
+\begin{array}{ll}
+b_{11} & b_{12} \\
+b_{21} & b_{22} \\
+\end{array}
+\right)$に対し
+
+\begin{equation*}
+A + B := \left(
+\begin{array}{ll}
+a_{11} + b_{11} & a_{12} + b_{12} \\
+a_{21} + b_{21} & a_{22} + b_{22} \\
+\end{array}
+\right)
+\end{equation*}
+
+\begin{equation*}
+A B := \left(
+\begin{array}{ll}
+a_{11}b_{11} + a_{12}b_{21} & a_{11}b_{12} + a_{12}b_{22} \\
+a_{21}b_{11} + a_{22}b_{21} & a_{21}b_{12} + a_{22}b_{22} \\
+\end{array}
+\right)
+\end{equation*}
+
+$A + B = B + A$ですが、$AB = BA$とは限りません。
+\end{frame}
+
+\begin{frame}{行列の性質}
+行列$A=(a_{ij})$とする.
+
+行列$A$の大きさを表すような量として行列式が定義される
+\begin{equation*}
+  \det A := a_{11}a_{22} - a_{12}a_{21}
+\end{equation*}
+
+転置$A^T$の定義
+$
+A = \left(
+\begin{array}{ll}
+a_{11} & a_{21} \\
+a_{12} & a_{22} \\
+\end{array}
+\right)
+$
+\end{frame}
+
+
+\begin{frame}{ベクトル空間}
+\begin{itemize}
+\item 足し算、引き算、スカラー倍ができるもののこと
+\item $\mathbb{R}^n$のことだとも思える。
+\end{itemize}
+\end{frame}
+
+\begin{frame}{線形写像}
+ベクトル空間$V,W$の間の線形写像$f:V \to W$とは
+$a,b \in \mathbb{R}, x,y \in V$に対し
+\begin{equation*}
+f(ax + by) = af(x) + b f(y)
+\end{equation*}
+
+\begin{itemize}
+\item 一次元のベクトル空間$\mathbb{R}$同士の線形写像は直線と一対一に対応 \\
+      $\Rightarrow$ 線形写像は直線を高次元にしたもの、
+\item $m$次元空間から$n$次元空間への線形写像は$n \times m$行列と一対一に対応. \\
+      $\Rightarrow$ 行列とも対応
+\item 行列は直線の高次元化
+\end{itemize}
+\end{frame}
+
+\begin{frame}{多変数の微分}
+一変数の場合と違い、$h \in \mathbb{R}$での極限をそのまま計算できない. \\
+$\Rightarrow$ 向きを決めてその方向に対して微分を定義する.
+\begin{screen}
+$f:\mathbb{R}^n \to \mathbb{R}$とし、$e \in \mathbb{R}^n$とする. $x \in \mathbb{R}^n$で
+\begin{equation*}
+  \lim_{h\to0}\frac{f(x + he) - f(x)}{h}
+\end{equation*}
+が存在する時,$f$が$e$方向に \textbf{方向微分可能}という、
+
+$e_i = (0, \ldots, 1, \ldots, 0)$方向への微分を、偏微分といい、$\frac{\partial f}{\partial x_i}$と書く
+\end{screen}
+\end{frame}
+
+\begin{frame}{偏微分可能だが、ある方向で方向微分可能でない例}
+$f(x, y)$を以下で定義する.
+  - $x \neq 0, y \neq 0,\frac{xy}{x^2 + y^2}$
+  - それ以外, 0
+\begin{itemize}
+\item $e = (1, 1)$を取れば,原点で$e$方向に微分できない
+\item $e = (1, 0), (0, 1)$の場合はどちらも微分可能
+\end{itemize}
+\end{frame}
+
+\begin{frame}{行列の微分}
+$\mathbb{R}^{n \times m}$: $n \times m$行列全体とする。
+$f: \mathbb{R} \to \mathbb{R}^{n \times m}$に対する微分は
+- 行列の微分は実質、成分毎に見ればよい
+\begin{itemize}
+  \item $f_{ij}: \mathbb{R} \to \mathbb{R}$を$f_{ij}(x) = (f(x))_{ij}$
+  \item 定義域が多変数になった場合は偏微分の時と同様の議論
+\end{itemize}
+\end{frame}
+
+\begin{frame}{劣微分}
+一般に関数は微分できるとは限らない \\
+例: $\mathrm{ReLU}$ 原点で微分不可能
+\begin{itemize}
+\item  微分の拡張: 劣微分 で対応
+\item 劣微分は値ではなく値の集合
+\end{itemize}
+\begin{screen}
+$f: U \to \mathbb{R}$に対し、$d \in \mathbb{R}$が$x$の \textbf{劣勾配} とは,
+\begin{equation*}
+  \forall y \in U, f(x) + d(y-x) \le f(y)
+\end{equation*}
+劣勾配全体のなす集合を\textbf{劣微分}といいます。
+\end{screen}
+
+\end{frame}
+
+
+\begin{frame}{例}
+$\mathrm{ReLU}(x):= \max(x, 0)$とし、$x=0$とします。
+\begin{itemize}
+\item $d < 0$の時、$f(0) + d(-1) =  -d > 0 = f(-1)$より劣勾配でない
+\item $0 \le d \le 1$の時
+   \begin{itemize}
+  \item $y<0$とすると、$f(0) + dy <= 0 = f(y)$
+  \item $y \ge 0$の時、$f(0) + dy <= y = f(y)$
+  \item $dy$は劣勾配.
+   \end{itemize}
+\item $d > 1$の時、$f(0) + d > 1 = f(1)$となり、劣勾配でない
+\end{itemize}
+よって、劣微分は$[0, 1]$となります。
+\end{frame}
+
+\begin{frame}{演習}
+\url{https://tutorials.chainer.org/ja/Exercise_Step_01.html}
+4章 4.8と5章までを解いてください
+\end{frame}
+
+\begin{frame}{まとめ}
+NNは行列と活性化関数の関数の合成であり
+\begin{itemize}
+   \item 一変数の微分の計算
+   \item 行列の計算
+   \item 多変数の微分の計算
+   \item 多変数の合成関数の微分ができる。
+\end{itemize}
+    
+\end{frame}

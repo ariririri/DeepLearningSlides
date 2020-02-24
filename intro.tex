@@ -1,0 +1,286 @@
+\part{ DeepLearning入門 No.1}
+
+
+\section{Chapter 1 Intoroduction}
+\begin{frame}{この章の目標}
+講座全体のイントロと前提知識の確認
+\begin{itemize}
+    \item 機械学習とは?
+    \item 数学
+    \item  プログラミング
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{この講座の目的}
+理想は論文を読み、以下を理解する.
+\begin{itemize}
+    \item 提案手法特徴の理解
+    \item 提案手法のアルゴリズム
+    \item 提案手法の実装
+\end{itemize}
+つまり... \textbf{DeepLearning}になれる!!!!
+\end{frame}
+
+
+\begin{frame}{皆さんへのお願い}
+皆さんの知識に合わせ、最適な授業にしたい
+\begin{itemize}
+    \item わからない点を質問してください \\
+          一日最低3質問以上
+   \item なるべくアウトプットを多くしていただく
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{お願いその2}
+現状は基本となる知識を教える想定なので,
+仕事でDLしている方は予め教えて下さい...
+もし多数であれば以下を解説する回があるかも
+\begin{itemize}
+    \item 理論系の論文
+    \item NLP,画像処理,音声等の応用系の新しい論文
+    \item 万能近似定理等の証明
+\end{itemize}
+\end{frame}
+
+\begin{frame}{確認1 数学の知識}
+多変数の合成関数の微分ができれば問題ありません. \\
+
+\textbf{キーワード}
+\begin{itemize}
+  \item ベクトル
+  \item 行列
+  \item 合成関数の微分
+  \item 多変数の微分
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{確認2 Pythonの知識}
+キーワード
+\begin{itemize}
+  \item if, for 等の最低限の文法
+  \item 配列,dict
+  \item numpyの知識
+  \item Pytorchの手法
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{確認3 Pythonの環境}
+\begin{itemize}
+    \item Kaggleのアカウント及びKernel \\
+    Notebook等の共有はKaggle上で行いますので、まだ作れていない方は作って下さい.
+    \item Google Colaboratory \\
+    一部のGPUが必要なコードなどははここで確認してください.
+    \item LocalのPython環境 \\
+    あると便利ですが、必須ではありません.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{初学者向けのお願い}
+
+私からのお願いです.
+\begin{itemize}
+\item 間違ってもいいので、トライしてください.
+\item わからない原因を分析してください.
+\item わからない箇所を検索してください.
+\item 曖昧さを楽しみつつ、厳密さをこだわってください.
+\end{itemize}
+\end{frame}
+
+
+Kaggleのアカウント作成タイム
+
+https://www.kaggle.com/t/d646a2a5bb1c4ebda09639bffd4c252f
+
+\section{人工知能と機械学習の歴史}
+
+\begin{frame}{人工知能とは}
+\begin{itemize}
+\item 正確な統一された定義はない.
+\item 直感的には"人の知能"を機械が学習するもの
+\item 詳細は教科書を確認ください.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{かつては}
+実行知能といえば\textbf{エキスパートシステム}のことだった.
+エキスパートシステムの概要は
+\begin{itemize}
+  \item データから人間が特徴を見つけ出し
+  \item その特徴を実装する
+\end{itemize}
+しかし,特徴を見つけ出すことに限界があった
+\end{frame}
+
+
+\begin{frame}{現在の人工知能}
+人工知能の基本的方針
+\begin{itemize}
+\item データから学習するもの
+\item 実質、機械学習
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{機械学習}
+\begin{itemize}
+\item データから学習する能力を持つプログラム
+\item かつては下火だった.
+\item DLの大成功で台頭する.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{両者の違い}
+\begin{itemize}
+\item 人工知能 \\
+      知能の代替が実現できれば方式は問わない
+\item 機械学習
+      \\ データを用いてパラメータをチューニングするアルゴリズム全般
+\end{itemize}
+\end{frame}
+
+
+\section{機械学習とその分類}
+
+
+\begin{frame}機械学習の登場人物
+\begin{itemize}
+\item データ: 機械学習の世界ではデータは数値です。
+\item 仮説空間: データから予測する"関数"を仮説と言います。仮説空間は仮説 (関数) の集まりです。
+\item 損失: 仮説の良し悪しを測るもの.
+\end{itemize}
+機械学習はデータを使い,指標が最小になるように,仮説空間を探索する.
+\end{frame}
+
+
+\begin{frame}{機械学習の種類}
+\begin{itemize}
+\item 教師あり学習: データが入力と出力の組
+\item 教師なし学習: データが入力のみ
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{教師あり学習の例}
+メールをスパムが判定する問題
+\begin{itemize}
+\item 入力データ: メールに特定の文字があるか
+\item 出力データ: スパムかどうか
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{教師あり学習の例2}
+建物の価格推定
+\begin{itemize}
+\item 入力データ: 広さ、地域、築
+\item 出力データ: 建物の価格
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{分類問題と回帰問題}
+\begin{itemize}
+\item 分類問題 (classification) : 離散変数の予測
+\item 回帰問題 (regression) : 連続変数の予測
+\item スパム判定は分類
+\item 価格推定は回帰
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{連続変数とは}
+\begin{itemize}
+\item 価格も整数なので離散なのでは?
+\item 連続関数は関数に対して連続性を定義したものだったが?
+\item 実際は値の大小に意味がある、かつ量がそれなり(問題依存)の時\textbf{連続}という.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{教師なし学習の例}
+\begin{itemize}
+\item 入力データ:顧客の商品購入履歴
+\item 顧客の属性を5種類に分け分析する
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{教師なし学習の特徴}
+5種類の分割の解釈が機械任せ
+\begin{itemize}
+  \item 例えば、年齢ごとで5分割されるかもしれない
+  \item 例えば、よく買うカテゴリーで分割されるかもしれない.
+  \item たいていの場合、それらが曖昧で何を表すか読み解くのが困難
+\end{itemize}
+\end{frame}
+
+
+\section{教師あり学習}
+
+
+\begin{frame}{分類問題}
+\begin{itemize}
+\item 入力をいくつかに分割することに相当
+\item その分割の境界を決定境界という.
+\item 決定境界には線形と非線形がある.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{線形分類モデルの例}
+\begin{itemize}
+\item ソフトマックス回帰モデル
+\item 線形サポートベクトル分類器
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{非線形の例}
+\begin{itemize}
+\item k-近傍法
+\item RBF カーネルによるサポートベクトル分類器
+\item 3層以上のニューラルネットワーク
+\item 決定木ベースの分類モデル
+\item ガウス過程
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{線形と非線形の違い}
+\begin{itemize}
+\item 線形の方が単純
+  \begin{itemize}
+  \item 最低限の精度が出やすい
+  \item チューニングが簡単
+  \end{itemize}
+\item 非線形の方が複雑
+  \begin{itemize}
+  \item 計算に時間がかかる
+  \item チューニングが難しい場合が多い.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{ノーフリーランチ定理}
+どんなタスクにも上手くいくような機械学習モデルというのは基本ない.
+\end{frame}
+
+
+\begin{frame}{演習}
+\url{https://tutorials.chainer.org/ja/Exercise_Step_01.html}
+\begin{itemize}
+\item 2章
+\item 4章
+\end{itemize}
+\end{frame}
+
+\section{ノーフリーランチ定理の証明}

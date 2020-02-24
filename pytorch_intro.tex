@@ -1,0 +1,507 @@
+\section{Pytorch 入門}
+
+\begin{frame}[fragile]{ここで学ぶこと}
+ DeepLearningの基本的な実装方法
+ \begin{itemize}
+  \item Pytorchの基本的な型
+  \item DLのプログラムの基本的な処理方法
+  \item 各コンポーネントで使われるクラス.
+ \end{itemize}
+
+\end{frame}
+\begin{frame}[fragile]{機械学習で必要な操作}
+\begin{itemize}
+\item データの前処理
+\item 学習
+\item 推論
+\item 評価
+\end{itemize}
+
+\end{frame}
+\begin{frame}[fragile]{深層学習エンジニアがやること}
+https://<!-- slide -->
+www.slideshare.net/pfi/20171212-gtc-pfnchainer
+
+![](https://image.slidesharecdn.com/20171212gtcpfnchainer-171215022416/95/20171212-gtc-pfnchainer-6-638.jpg?cb=1513305240)
+
+\end{frame}
+\begin{frame}[fragile]{フレームワークで考えること}
+どのようにネットワークを記述するか?
+\begin{itemize}
+  \item 複雑なモデルを簡単に記述するには
+  \item 実装ミスを減らすには
+  \item デバッグするには
+  \item モデル以外も簡単に書くには
+\end{itemize}
+
+どのように最適化するか
+\begin{itemize}
+  \item 自動微分等の最適化プロうグラムを実行
+  \item いかに高速・省メモリで実行するるか
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{個人的な見解}
+\begin{itemize}
+\item ネットワークの定義方法はどこも近づいている.
+\item 最近はそれ以外で勝敗が決まっている気がする
+  \begin{itemize}
+  \item  前処理の書きやすさ
+  \item 結果の可視化が楽か
+  \item ユーザの多さ
+    \begin{itemize}
+    \item  バグの少なさ
+    \item 最先端ライブラリの再現実装数
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+とはいえ,好きなものを使えば良い
+\end{frame}
+
+
+\begin{frame}[fragile]{個人的な好み}
+\begin{itemize}
+\item  Chainer
+  \begin{itemize}
+  \item  ソースコードが最も美しい.
+  \item 困ったらソースを読む.
+  \end{itemize}
+\item Pytorch
+  \begin{itemize}
+  \item  ChainerからForkしたので思想が近い
+  \item  Nvidia,Facebookも使っており人口が多い
+  \end{itemize}
+\item Tensorflow
+   \begin{itemize}
+    \item Python2系色が強い
+    \item ソースコード読むのが地獄だった...
+   \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Chainerの現状}
+\begin{itemize}
+\item 開発を止めるとのこと。
+\item お疲れさまです。
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{実際のコーディングに関して}
+\begin{itemize}
+\item フレームワークでできる範囲の場合、モデルの作成は慣れればすぐ
+\item 変化は早いので都度ドキュメント確認
+\item 勉強する時もドキュメントとソースを読んだ方がよい.
+\item 実際使う場合はデータの前処理が重い
+\item メモリや再現性が大変なことも...
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{プログラミングなれていない人は}
+\begin{itemize}
+\item 恐れずにPytorchのTutorialをやりましょう.
+\item わからない場合は一緒に調べましょう.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{機械学習フレームワークを使ってやること}
+我々が実装するもの
+\begin{itemize}
+  \item データの前処理
+  \item 仮説(機械学習モデル)
+  \item 損失関数
+\end{itemize}
+実装せずに行うこと
+\begin{itemize}
+  \item 学習して、最適な$w$を求めること.
+  \item 裏では微分計算が行われる( \textbf{自動微分})
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Pytorchの環境構築方法}
+デフォルトで入っているもの
+\begin{itemize}
+  \item Kaggle Kernel
+  \item Google Collaboratory
+\end{itemize}
+Jupyter Notebookの場合はインストールが必要
+  公式ページで確認.
+  \url{https://pytorch.org/}
+\end{frame}
+
+
+\begin{frame}[fragile]{Pytorchでよく使うもの}
+\begin{itemize}
+\item Tensor: Pytorch用の多次元配列 \\
+  入力: $x$, パラメータ: $w$,
+\item Dataset/Dataloader \\
+  データの前処理、読み込み
+\item nn.Module \\
+  ニューラルネットワーク
+\item optim \\
+  最適化アルゴリズム
+\end{itemize}
+一つずつ見ていく.
+\end{frame}
+
+
+\begin{frame}[fragile]{Tensor}
+\begin{itemize}
+  \item numpy.ndarrayのような多次元配列
+  \item numpyと違って勾配の情報もある.
+  \item Pytorchの入力はTensorにする必要がある.
+\end{itemize}
+
+Tensorの機械学習的な意味
+\begin{itemize}
+  \item 機械学習では3次元以上の多次元配列をさす事が多い.
+  \item 数学的にはベクトル空間や加群の積として定義される
+\end{itemize}
+
+\end{frame}
+\begin{frame}[fragile]{Tensorになれる}
+
+\begin{minted}[frame=lines, fontsize=\footnotesize, breaklines=true, bgcolor=black]{python}
+# uninitializedなので、0とは限らない
+x = torch.empty(5, 3)
+print(x)
+# 乱数の生成
+x = torch.rand(5, 3)
+print(x)
+# zero
+x = torch.zeros(5, 3, dtype=torch.long)
+print(x)
+\end{minted}
+\end{frame}
+
+
+\begin{frame}[fragile]{Tensorになれる}
+\begin{minted}[frame=lines, fontsize=\footnotesize, breaklines=true, bgcolor=black]{python}
+x = torch.tensor([5.5, 3])
+print(x)
+x = x.new_ones(5, 3, dtype=torch.double)      # new_* methods take in sizes
+print(x)
+​
+x = torch.randn_like(x, dtype=torch.float)    # override dtype!
+print(x)
+\end{minted}
+
+\end{frame}
+\begin{frame}[fragile]{Tensorになれる}
+\begin{minted}[frame=lines, fontsize=\footnotesize, breaklines=true, bgcolor=black]{python}
+y = torch.rand(5, 3)
+print(x + y)
+​
+result = torch.empty(5, 3)
+torch.add(x, y, out=result)
+print(result)
+\end{minted}
+\end{frame}
+
+
+\begin{frame}[fragile]{使うパッケージのimport}
+\begin{minted}[frame=lines, fontsize=\footnotesize, breaklines=true, bgcolor=black]{python}
+from torchvision import datasets, transforms
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+\end{minted}
+\end{frame}
+
+
+\begin{frame}[fragile]{Dataset/Dataloader}
+\begin{itemize}
+\item 複雑なので、後で説明する.
+\item kagglekernelはデータをDLできないので、エラーになる場合も
+\end{itemize}
+以下で使える
+\begin{minted}[frame=lines, fontsize=\footnotesize, breaklines=true, bgcolor=black]{python}
+    train_loader = torch.utils.data.DataLoader(
+        datasets.MNIST('../data', train=True, download=True,
+                       transform=transforms.Compose([
+                           transforms.ToTensor(),
+                           transforms.Normalize((0.1307,), (0.3081,))
+                       ])),
+        batch_size=args.batch_size, shuffle=True)
+\end{minted}
+\end{frame}
+
+
+\begin{frame}[fragile]{ニューラルネットワークの作成}
+\begin{itemize}
+\item linearは行列をかける関数
+\item forwardはNNの計算を実際に行う
+\end{itemize}
+
+\begin{minted}[frame=lines, fontsize=\footnotesize, breaklines=true, bgcolor=black]{python}
+class Net(nn.Module):
+    def __init__(self, input_size, output_size):
+        super(Net, self).__init__()
+        self.input_size = input_size
+        self.output_size = output_size
+        self.linear = nn.Linear(input_size, output_size)
+
+    def forward(self, x):
+        x = x.view(-1, self.input_size) # reshape
+        return self.linear(x)
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{パラメーター更新の設定}
+
+```python
+model = Net(input_size, output_size)
+criterion = nn.CrossEntropyLoss() # 損失の定義
+optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate) # (確率的)勾配降下法
+```
+
+
+\end{frame}
+\begin{frame}[fragile]{}実際の学習
+```python
+model.train() # 学習用のモード
+for epoch, (data, target) in enumerate(train_loader): # 入力と正解
+     optimizer.zero_grad() #Weightの初期化
+     output = model(data) # 仮説で値代入
+     loss = criterion(output, target) # 損失
+     loss.backward() # 微分の計算
+     optimizer.step() # パラメータの更新
+     if epoch % 600 == 0:
+         print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+             epoch, epoch * len(data), len(train_loader.dataset),
+             100. * epoch / len(train_loader), loss.item()))
+```
+
+\end{frame}
+\begin{frame}[fragile]{}結果の評価
+```python
+model.eval()
+test_loss = 0
+correct = 0
+with torch.no_grad():
+    for data, target in test_loader:
+        output = model(data)
+        test_loss += F.nll_loss(output, target, reduction='sum').item() # sum up batch loss
+        pred = output.argmax(dim=1, keepdim=True) # get the index of the max log-probability
+        correct += pred.eq(target.view_as(pred)).sum().item()
+
+test_loss /= len(test_loader.dataset)
+
+print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+    test_loss, correct, len(test_loader.dataset),
+    100. * correct / len(test_loader.dataset)))
+```
+
+\end{frame}
+\begin{frame}[fragile]{}余談
+今回はデータをすべて一度しか使っておらず、学習は収束していない。 そのため、何回か学習を繰り返すことで評価データの精度も向上する。
+
+\end{frame}
+\begin{frame}[fragile]{}演習
+IRISのデータに対してpytorchでSoftmax回帰を実装せよ.
+
+
+\end{frame}
+\begin{frame}[fragile]{}結果の可視化
+
+Tensorboard一択
+
+\end{frame}
+\begin{frame}[fragile]{}Tensorboard
+```python
+from torch.utils.tensorboard import SummaryWriter
+
+# default `log_dir` is "runs" - we'll be more specific here
+writer = SummaryWriter('runs/fashion_mnist_experiment_1')
+dataiter = iter(trainloader)
+images, labels = dataiter.next()
+
+# create grid of images
+img_grid = torchvision.utils.make_grid(images)
+
+# show images
+matplotlib_imshow(img_grid, one_channel=True)
+
+# write to tensorboard
+writer.add_image('four_fashion_mnist_images', img_grid)
+```
+
+\end{frame}
+\begin{frame}[fragile]{}Tensoboardで欲しいもの
+- 計算グラフ
+- サンプルデータの可視化
+- 訓練誤差,評価誤差
+- Weightの遷移 #個人的にはあまり使ったことがない
+
+\end{frame}
+\begin{frame}[fragile]{}Tensorboardの使い方
+```bash
+tensorboard --logdir=runs
+```
+from the command line and then navigating to https://localhost:6006 should show the following.
+
+\end{frame}
+\begin{frame}[fragile]{Kaggle Kernelだと}
+https://www.kaggle.com/aagundez/using-tensorboard-in-kaggle-kernels
+
+```
+%load_ext tensorboard.notebook
+%tensorboard --logdir logs
+```
+
+
+\section{dataの前処理}
+
+\end{frame}
+\begin{frame}[fragile]{}Dataを持つクラス
+- データ自体を内部に持つクラスが2つあります
+  - Dataset
+  - Dataloader
+
+- Datasetは入力にするデータそのもの.
+  生データを入力にし、内部的に整形して、データを保持する
+- Dataloaderは実際に学習、推論する時に使われるバッチ単位のデータ
+
+\end{frame}
+\begin{frame}[fragile]{}前処理のプロセス
+Pytorchの前処理としては
+
+1. Datasetクラスでデータを整形、保持
+2. そこから適切にサンプリングしてDataLoaderを作成
+
+- データの整形、サンプリングは複雑な処理になる場合もあるため、分離されている.
+  - データの整形は`transform`メソッドで行われ、
+  - サンプリングは`Sampler`クラスで実行されます。
+
+\end{frame}
+\begin{frame}[fragile]{}Datasetクラス
+- データを受け取るクラスです。
+
+- 現在主に2つの種類のデータセットがあります。
+  - iterable-style
+  - map-style
+- 参考: https://pytorch.org/docs/stable/data.html
+
+\end{frame}
+\begin{frame}[fragile]{}iterable-styleは
+iterable-styleは以下が実装されていればよいようです。
+
+```python
+def __iter__(self)
+```
+
+ただ、このiteratorではsamplingなども一つに入ることになってしまうので、あまり推奨されていないのかなと思いました。
+
+\end{frame}
+\begin{frame}[fragile]{}map-style
+- map-styleはlistやdictなどでkeyを元に受け取りるデータクラス.
+- 以下が実装されいればよいです。
+  - `__getitem__(self, index)`
+    教師あり学習の場合は正解も含め返すことが多そうです。
+  - `__len__(self)`
+     サイズ(整数値)
+- [ソースコード](https://github.com/pytorch/pytorch/blob/master/torch/utils/data/dataset.py#L8)を見ると
+`__len__` に対して何か制約してるわけではなさそう.
+- `Sampler`で使われるので、実質必須.
+
+\end{frame}
+\begin{frame}[fragile]{}transform
+- プロトコルとしては定義されておらず。
+- [Pytorchのチュートリアル](https://pytorch.org/tutorials/beginner/data_loading_tutorial.html)を見ても、使われています。
+
+\end{frame}
+\begin{frame}[fragile]{}コード例
+
+```python
+
+    def __init__(self, csv_file, root_dir, transform=None):
+        self.landmarks_frame = pd.read_csv(csv_file)
+        self.root_dir = root_dir
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.landmarks_frame)
+
+    def __getitem__(self, idx):
+        if torch.is_tensor(idx):
+            idx = idx.tolist()
+
+        img_name = os.path.join(self.root_dir,
+                                self.landmarks_frame.iloc[idx, 0])
+        image = io.imread(img_name)
+        landmarks = self.landmarks_frame.iloc[idx, 1:]
+        landmarks = np.array([landmarks])
+        landmarks = landmarks.astype('float').reshape(-1, 2)
+        sample = {'image': image, 'landmarks': landmarks}
+
+        if self.transform:
+            sample = self.transform(sample)
+
+        return sample
+```
+
+\end{frame}
+\begin{frame}[fragile]{}Transform/Sampler
+- Transoform
+  - データの加工をするものです。
+  - 特に制限はなく必要な処理を実装すればよい
+- Sampler
+  - Dataに対してサンプリングする処理をするもの
+  - 特に制限はなく必要な処理を実装すればよい
+
+
+\end{frame}
+\begin{frame}[fragile]{Dataloader}
+```python
+for indices in batch_sampler:
+    yield collate_fn([dataset[i] for i in indices])
+```
+という結果を返す.
+
+\end{frame}
+\begin{frame}[fragile]{collate_fn}
+\begin{itemize}
+\item dataを処理するもの
+\item 例えば物体検出のように入力と出力のsizeが異なる場合はで適切に処理する必要があります。
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Tensorboard}
+\begin{itemize}
+\item 前提: 本来はtensorflow用のもの
+\item pytorchでも使えるが,結果を出力するには`tensorflow`が必要(のようだ).
+\item インストールは`pip install tensorflow tensorboard`でできる.
+\item tensorflowはpython3.7系では動かない?
+\item poetry, pipenvでは(たいていの場合に)入らない
+\item gpuを使いたい場合は`tensorflow-gpu`になる.
+\item インストールが複雑のため、有志がお試しください.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{演習}
+Alexnetを微分して,
+各パラメータの更新式を記述しなさい.
+\end{frame}
+
+
+\begin{frame}[fragile]{演習}
+\begin{itemize}
+\item PytorchでMNISTを4層のDNNで学習してみてください
+\item PytorchでIRISを4層のDNNで学習してみてください
+\item Pytorchで以下の条件でMNISTをDNNで学習してみください
+  \begin{itemize}
+  \item Weight Decay 0.01
+  \item BatchNormalizationあり
+  \item Dropoutあり
+  \item これらの差分をTensorboardで可視化する.
+  \end{itemize}
+\end{itemize}
+\end{frame}

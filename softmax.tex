@@ -1,0 +1,531 @@
+\section{ロジスティック回帰/ソフトマックス回帰}
+\begin{frame}{この章の目標}
+DeepLearnigの最も単純な場合に相当するロジスティック回帰と
+ソフトマックス回帰を通じて、機械学習モデルの
+\begin{itemize}
+\item  モデルの作り方
+\item  学習方法
+\item  モデルの評価方法
+\end{itemize}
+を学ぶ
+\end{frame}
+
+\begin{frame}{皆さんへのお願い(繰り返し)}
+皆さんの知識に合わせ、最適な授業にしたい
+\begin{itemize}
+\item わからない点を質問してください. \\
+      できれば,一日最低3質問以上
+\item なるべくアウトプットを多くしていただく
+\end{itemize}
+\end{frame}
+
+\begin{frame}{ソフトマックス回帰とは}
+教師あり学習で分類タスクに使われる手法。
+2層のニューラルネットワークとしても記述可能
+\begin{itemize}
+\item 入力: $X \subset \mathbb{R}^n$
+\item 出力: $\{1, \ldots, m\}$
+\end{itemize}
+
+2値の分類の時,≒出力が$\{1, 2\}$の時,ロジスティック回帰という.
+二値の場合は$\{0,1\}$とすることも多い.
+\end{frame}
+
+\begin{frame}{機械学習の登場人物(再掲)}
+
+\begin{itemize}
+\item データ: 機械学習の世界ではデータは数値
+\item 仮説: データから予測する"関数"
+\item 仮説空間: 仮説空間は仮説 (関数) の集まり
+\item パラメータ: 仮説空間を表すもの.DeepLearningの場合は行列複数個
+\item 損失(指標): 仮説の良し悪しを測る基準
+\end{itemize}
+\end{frame}
+
+\begin{frame}{機械学習のプロセス}
+\begin{enumerate}
+\item 機械学習モデルの設計
+   \begin{itemize}
+   \item 仮説空間の設定
+   \item 損失を定義
+   \end{itemize}
+\item (学習)損失を最小になるようにパラメータを探索
+\item 評価
+   評価データに対する精度を測定.
+\end{enumerate}
+\end{frame}
+
+\section{機械学習モデルの設計}
+ソフトマックス回帰モデルの仮説と損失を定義する.
+
+\begin{frame}{One-hot Encoding}
+機械学習のデータは数値に変換するが,
+例えばりんごとみかんとぶどうのような三種類のデータを$[1, 2, 3]$と設定してもうまくいかない事が多い.
+\begin{itemize}
+  \item データ同士に大小関係がないため
+  \item このようなデータをCategoricalデータという
+\end{itemize}
+代わりにOne-Hot Encodingをする.
+\begin{itemize}
+  \item りんご →  $[1, 0, 0]$
+  \item みかん → $[0, 1, 0]$
+  \item ぶどう → $[0, 0, 1]$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{ソフトマックス関数}
+$n$次元のベクトル$z=(z_1,\cdots,z_n)^T$に対し、ソフトマックス関数を
+\begin{eqnarray*}
+{\rm softmax}(z) := \frac{\exp(z)}{\sum_{k=1}^{n}\exp(z_{k}) } \in \mathbb{R}^n
+\end{eqnarray*}
+ただし、
+\begin{equation*}
+  \exp(z) = (\exp(z_1), \cdots, \exp(z_n)) \in \mathbb{R}^n
+\end{equation*}
+\begin{itemize}
+\item 各要素はすべて正の値をとる。
+\item 各要素の総和は1になる。
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{softmax回帰の仮説}
+
+\begin{itemize}
+\item $Z_i(w_i, x) := \exp(w_i x)$とおく.
+\item $p_i(w_i, x) := \frac{Z_i(w_i, x)}{\sum Z_j(w_j, x)}$とする。
+\end{itemize}
+この時softmax回帰の仮説を
+$$
+ \mathrm{argmax} (p_i(w_i, x))
+$$
+と定める.
+
+\begin{itemize}
+\item \textbf{注意} : $\mathrm{argmax}$は本来集合を指す.
+\item ほとんどいたるところで要素が一つなので、要素への写像とみなす.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{仮説とSoftmax関数の関係}
+$w_1, \ldots, w_m \in \mathbb{R}^n$を並べた$m \times n$行列を$w$とかき、以下のようにも表す.
+$
+w = \left(
+\begin{array}{lll}
+w_{11} & \ldots & w_{1n} \\
+\vdots & \vdots & \vdots \\
+w_{m1} & \ldots & w_{mn}
+\end{array}
+\right)
+$
+
+softmax回帰の仮説$h(x, w)$は
+\begin{equation*}
+  h(x, w) := \mathrm{argmax} \left(\mathrm{softmax}(wx)\right)
+\end{equation*}
+となる。
+\end{frame}
+
+\begin{frame}{ソフトマック回帰のパラメータ}
+\begin{itemize}
+\item パラメータは仮説を決める変数
+  \begin{itemize}
+  \item パラメータで記述できるモデルをパラメトリックモデル
+  \item パラメータでは記述しきれないモデルをノンパラメトリックモデル
+  \item パラメータ次第で値は大きく変わる.
+  \end{itemize}
+\item ソフトマックス回帰モデルでは行列$w$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{機械学習モデルとは?(余談)}
+\begin{itemize}
+\item 定義は曖昧
+\item 仮説のことを指す場合か
+\item 損失や学習アルゴリズムを含める場合も
+\end{itemize}
+\end{frame}
+
+\begin{frame}{損失の定義}
+交差エントロピー損失(1データ$(x,y)$の場合)
+\begin{eqnarray*}
+\ell(w;x,y) &=& -\sum_{k=1}^{m}\log p_k(x, w_k){\bf 1}[y=k]
+\end{eqnarray*}
+\begin{itemize}
+\item ${\bf 1}[A]$
+  \begin{itemize}
+  \item 条件$A$が満たされている場合に1
+  \item 満たされていない場合には0
+  \item \textbf{指示関数}もしくは \textbf{特性関数} と呼ばれる
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{1データの場合の損失}
+交差エントロピー損失(1データ$(x,y)$の場合)
+\begin{eqnarray*}
+\ell(w;x,y) = -\sum_{k=1}^{m}\log p_k(x, w_k){\bf 1}[y=k] = - \log p_k(x, w_k)
+\end{eqnarray*}
+数値をみると
+\begin{itemize}
+  \item 正解ラベルを予測する確率に応じて単調に値が小さくなる.
+  \item 正解ラベルの予測確率が1の場合0で最小.
+  \item 正解が$k$であることがわからないとこのままは計算できない.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{皆さんへのお願い(繰り返し)}交差エントロピーの変形
+  \begin{itemize}
+\item N個のデータの組$D$を$(x_1,y_1), \ldots (x_N, y_N)$とする。
+\item $p(x_i, w) = (p_1(x_i, w_1), \ldots, p_m(x_i, w_m))$とする
+\item $Y_i \in \mathbb{R}^m$を$y_i$のone-hot vectorとする.
+  \end{itemize}
+
+この時交差エントロピー損失は以下になる.
+
+\begin{align}
+\ell(w;D) &= -\sum_{i=1}^{N}\sum_{k=1}^{m}\log p_k(x_i, w_k){\bf 1}[y_i=k] \\
+          &= -\sum_{i=1}^{N}\sum_{k=1}^{m}\log p(x_i, w) \cdot Y_i
+\end{align}
+\end{frame}
+
+\begin{frame}{確率と交差エントロピー}
+実は交差エントロピーは2つの確率の間の距離になる。
+One-hot vector $Y_i$は
+\begin{itemize}
+  \item $k$以外となる確率 0
+  \item $k$となる確率 1
+\end{itemize}
+となる確率$q$と思える。
+
+そのため$q$を$(0, 0 , \ldots ,1,0, \ldots ,0)$で表す.
+これはOne-hot vectorと一致している。
+\end{frame}
+
+\begin{frame}{クロスエントロピーの図}
+
+![image.png (9.7 kB)](https://img.esa.io/uploads/production/attachments/7890/2019/10/15/29770/5d533dd9-a357-4e52-b090-d22b243820c8.png)
+
+\end{frame}
+
+\begin{frame}{実装タイム}
+パラメーター$W$を3×3行列、入力、出力ともに三次元に固定した場合に
+\begin{itemize}
+\item クロスエントロピー
+\item ソフトマックス回帰の仮説
+\end{itemize}
+を実装しよう。
+\end{frame}
+
+\begin{frame}{学習}
+\begin{itemize}
+\item パラメーターをデータを用いて決めること
+\item 学習のプロセス
+  1. 実際の入力と出力のペアをデータとして準備する。
+  1. 各データポイントで出力と予測値の食い違いを測る指標を準備する。
+  1. データ全体で損失が最も小さくなるように仮説を求める。
+\end{itemize}
+\textbf{注意} :教師あり学習で真にやりたいことは"未知のデータ"に対しても精度の高い機械学習モデルを構築することです。
+
+\end{frame}
+
+\begin{frame}{(局所的な)最小値を求める方法}
+\begin{itemize}
+\item 勾配降下法
+\item ニュートン法
+\item ラグランジュの未定乗数法
+\item KKT条件
+\end{itemize}
+\end{frame}
+
+\begin{frame}{勾配降下法}
+(なめらかな)関数$J(w)$に対して、その極小値を求めたいとします。
+1. 初期値$w^{(0)}$と学習率$\eta>0$を決めてください。
+2. 以下の更新式を$k=0,\cdots, M-1$で繰り返します。
+$$
+w^{(k+1)}=w^{(k)}-\eta\frac{\partial J}{\partial w}(w^{(k)})
+$$
+
+\begin{itemize}
+\item 勾配降下法はこのように繰り返しパラメータを更新
+\item 学習率を上手に決めないと、解が発散する場合も
+\end{itemize}
+\end{frame}
+
+\begin{frame}{ニュートン法}
+\begin{enumerate}
+\item $f(x) = 0$となる$x$を求める.
+\item $f'(x) \neq 0$が必要になるかわりに速い.
+\item $\ell(w; x, y)$の極小値を求める場合は$\frac{\partial \ell}{\partial w} = 0$となる$w$を求める。
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{ニュートン法の概要}
+\begin{itemize}
+\item $f: \mathbb{R} \to \mathbb{R}$とする.
+\item $f(x) = 0$となる$x$を求める
+以下をM回繰り返す.
+  $x_{n+1} = x_n - \frac{f(x_n)}{f'(x_{n})}$
+\item 多変数の場合($f: \mathbb{R}^n  \to \mathbb{R})$
+  $x_{n+1} = x_n - \left(\frac{\partial f(x_{n})}{\partial x} \right)^{-1} f(x_n)$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{皆さんへのお願い(繰り返し)}勾配降下法とニュートン法の実装
+演習問題
+勾配降下法とニュートン法を実装して,
+$\sqrt{2}$を数値計算する。
+\end{frame}
+
+\begin{frame}{ラグラジュの未定乗数法とKKT条件}
+違うページを参照
+\end{frame}
+
+\begin{frame}{ソフトマックス回帰の場合の勾配降下法}
+\begin{enumerate}
+\item パラメーター$w$の関数と考える
+\item この時の勾配降下法
+  \item $\ell$を,$w$について微分する.
+  \item 勾配降下の式$w$を更新
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{表記の確認}
+  \begin{itemize}
+\item データ:$D =  \{(x_1, y_1), \ldots, (x_N, y_N)\}$
+\item パラメータ: $w$は$m \times n$行列
+\item 損失関数: $\ell(w, D)$
+\item $p(x_i, w) = (p_1(x_i, w_1), \ldots, p_m(x_i, w_m)) = Softmax(wx)$とする
+\item $q \in \mathbb{R}^m$を$y_i$のone-hot vectorとする.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{最適なパラメーター}
+以下を最小化するパラメーター
+$$
+\displaystyle \ell(w;\mathcal{D}) = \frac{1}{d}\sum_{i=1}^{d}\ell(w;x_i, y_i)
+$$
+\end{frame}
+
+\begin{frame}{クロスエントロピーの微分}
+データが1つの場合、クロスエントロピーは
+\begin{eqnarray*}
+\ell(w;x,y) &=& - q \cdot \log(p(x, w))
+\end{eqnarray*}
+書き下すと、以下になる.
+
+\begin{align*}
+&  -\sum_{k=1}^m q_k \log \left( \frac{ \exp(\sum_{i=1}^n w_{ki}x_i)}{\sum_{j=1}^m \exp(\sum_{i=1}^n w_{ji}x_i)} \right) \\
+= &- \sum_{k=1}^m q_k (\sum_{i=1}^n w_{ki}x_i) + \log(\sum_{j=1}^m \exp(\sum_{i=1}^n w_{ji}x_i))  \\
+\end{align*}
+となる.
+これを$w$について微分する
+\end{frame}
+
+\begin{frame}{クロスエントロピーの微分}
+$\ell(w;x, y) = f(w) + g(w)$となるように$f(w), g(w)$を定める.
+\begin{itemize}
+\item $f(w) = - \sum_{k=1}^m q_k (\sum_{i=1}^n w_{ki}x_i)$
+\item $g(w) = \log(\sum_{j=1}^m \exp(\sum_{i=1}^n w_{ji}x_i))$
+\end{itemize}
+
+これを$w_{ij}$で微分する.
+\begin{itemize}
+\item $\frac{\partial f}{\partial w_{ji}} = -  q_j x_i$
+\item $\frac{\partial g}{\partial w_{ji}} = \frac{x_i \exp(\sum_{i=1}^n w_{ji}x_i))}{\sum_{k=1}^m \exp(\sum_{i=1}^n w_{ki}x_i)}$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{ロジスティック回帰}
+\begin{itemize}
+\item ソフトマックス回帰で二値分類する時、ロジスティック回帰という.
+\item ロジスティック回帰の場合の仮説 $f: \mathbb{R}^n \to  \{0, 1\}$となる.
+\item ロジスティック回帰では$y=0$となる確率$p$だけ求めればよい.
+  \item 確率は$(p, 1-p)$
+  \item クロスエントロピー
+  \begin{itemize}
+    \item $y=1$の時$ - (0, 1) \cdot (\log p, \log(1-p) )$
+    \item $y=0$の時$ - (1, 0) \cdot (\log p, \log(1-p) )$
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{ソフトマックス関数の変形}
+\begin{itemize}
+ \item $\mathrm{softmax(a,b)} = (\frac{e^a}{e^a + e^b}, \frac{e^b}{e^a + e^b})$より
+ \item $\frac{e^b}{e^a + e^b} = \frac{1}{1 + e^{a-b}}$となる.
+ \item $\sigma: \mathbb{R} \to \mathbb{R}$をシグモイド関数とすると$\sigma(-a+b)$と上は一致する.
+ \item $y=0$となる確率は$ \sigma (-w_1 \cdot x + w_2 \cdot x) = \sigma((-w_1 + w_2) \cdot x)$
+ \item $w = - w_1 + w_2$として最適な$w$を求めるのが学習になる.
+\item 正解のOne-hotベクトルは$(y, 1-y)$とかける.
+\item よってクロスエントロピー$\ell(w; x, y)$は$y \log(\sigma(wx)) + (1-y) \log(1 - \sigma(wx)$となる.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{演習問題}
+クロスエントロピーの微分を計算せよ。
+
+\end{frame}
+
+\begin{frame}{シグモイド関数の微分}
+  \begin{itemize}
+\item $\sigma(wx)$を合成関数として表す.
+  \begin{itemize}
+  \item $f(w) = 1 + \exp(-w \cdot x)$
+  \item $g(x) = \frac{1}{x}$
+  \item $\sigma(wx) = g(f(w))$
+  \end{itemize}
+\item $\frac{\partial \sigma(wx)}{\partial w_1} = \frac{d g}{d x}(f(w)) \cdot \frac{\partial f}{\partial w_1}(w)$
+  \begin{itemize}
+  \item $\frac{d g}{d x}(f(w))  = - \frac{1}{f(w)^2}$
+  \item $\frac{\partial f}{\partial w}(w) = \frac{\partial 1 + \exp( - w \cdot x)}{\partial w_1} = - x_1 \exp( - w \cdot x)$
+  \end{itemize}
+\item $\frac{\partial \sigma(wx)}{\partial w_1} = - \frac{ - \exp(- w \cdot x)x_1}{(1 + \exp(- w \cdot x))^2} = x_1 (1 - \sigma(wx))(\sigma(wx)$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{クロスエントロピーの微分(1)}
+\begin{itemize}
+\item $u = \sigma(wx)$とおく
+\item $\frac{\partial \ell}{\partial w_1} =  \frac{\partial y \log(\sigma(wx))}{\partial w_1} + \frac{\partial (1-y) \log(1 - \sigma(wx))}{\partial w_1}$
+\item $\frac{\partial y \log(\sigma(wx))}{\partial w_1} = y \frac{\partial \log(\sigma(wx))}{\partial w} =  y \frac{d \log u}{d u}\frac{\partial \sigma(wx)}{\partial w_1}$より
+\item $\frac{\partial y \log(\sigma(wx))}{\partial w_1} = y \frac{1}{\sigma(wx)} x_1 (1 - \sigma(wx))(\sigma(wx))= yx_1(1 - \sigma(wx))$
+\item $\frac{\partial (1-y) \log(1 - \sigma(wx))}{\partial w_1} =  (1 -y) \frac{1}{1 - \sigma(wx)} - x_1 (1 - \sigma(wx))(\sigma(wx))$
+  \item $= (y - 1)x_1(\sigma(wx))$
+\item $\frac{\partial \ell}{\partial w_1}  = yx_1(1 - \sigma(wx)) + (y - 1)x_1(\sigma(wx))$
+\end{itemize}
+$$
+\frac{\partial \ell}{\partial w_1} = x_1(y - \sigma(wx))
+$$
+\end{frame}
+
+\begin{frame}{クロスエントロピーの微分(2)}
+\begin{itemize}
+\item データ$D =  \{(x_1, y_1), \ldots, (x_N,y_N)\}$の場合を考える
+  \item 上のスライドの$x_1$は$x_k$の第一成分になり、$x_{k1}$で表す.
+\item $\ell(w, D) = \sum_{k=1}^N \ell(w;x_k, y_k)$より
+\item $\frac{\partial \ell(w,D)}{\partial w_1} = \sum_{k=1}^N \frac{\partial\ell(w;x_k, y_k)}{\partial w_1} = \sum_{k=1}^N x_{k1}(y_k - \sigma(wx_k))$
+\item ヤコビ行列:
+  $(\sum_{k=1}^N x_{k1}(y_k - \sigma(wx_k)), \ldots, \sum_{k=1}^N x_{kn}(y_k - \sigma(wx_k))= X^T (Y - T)$
+  \item $X$は$x_{ij}$を並べた行列
+  \item $Y$は$y_j$を並べたベクトル
+  \item $T$は$\sigma(wx_j)$を並べたベクトル
+\end{itemize}
+\end{frame}
+
+\begin{frame}{演習問題}
+クロスエントロピーを最小となる$w$をニュートン法で求めよう
+\end{frame}
+
+\begin{frame}{クロスエントロピーのヘッセ行列}
+\begin{itemize}
+\item 1データの場合
+  \item $\frac{\partial \ell}{\partial w_i} = x_i(y - \sigma(wx))$より
+  \item $\frac{\partial^2 \ell}{\partial w_i \partial w_j} = \frac{\partial x_i(y - \sigma(wx))}{\partial w_j} = -x_i x_j (\sigma(wx))(1 - \sigma(wx))$
+\item データセット$D$の場合
+  \item $\frac{\partial^2 \ell}{\partial w_i \partial w_j}  = - \sum_{k=1}^Nx_{ki} x_{kj} (\sigma(wx_k))(1 - \sigma(wx_k))$
+  \item $y$がなくなっていることに注意
+  \item ヘッセ行列$H = (\frac{\partial^2 \ell}{\partial w_i \partial w_j})_{i,j} = X^tRX$となる.
+    \item $X$は$x_{ij}$を並べた行列
+    \item $R$は対角成分が$\sigma(wx_k)(1 - \sigma(wx_k)$の対角行列
+\end{itemize}
+\end{frame}
+
+\begin{frame}{ニュートン法への適用}
+\begin{itemize}
+\item $w^{n+1} = w^n - H^{-1}\frac{\ell(w;D)}{\partial w}$
+  \item $= (X^TRX)^{-1}(X^TR)(Xw^{n} - R^{-1}(t - y))$
+\item 後は実際に実装するのみ
+  \item 一定回数iterationする.
+  \item 皆さんの演習.
+  \item wは$scipy.linalg(X^TRX, b)$で計算する
+  \item $(X^TRX w = b)$の解$(X^TRX)^{-1} b$を求めることに相当する.
+  \item $b = (X^TR)(Xw^{n} - R^{-1}(t - y))$
+後は実際に実装すればいける...はずなんだ(涙)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{確認の演習問題}
+\begin{itemize}
+\item シグモイド関数を微分せよ.
+\item $x_1, x_2 \in \mathbb{R}^2$とし$y_1, y_2 \in  \{0, 1\}$とする.
+  \item パラメータ$w$を二次元のベクトルとして,ロジスティック回帰の式を記述せよ
+  \item ロジスティック回帰のクロスエントロピーを記述せよ
+  \item $x_1 = (2, 3)$, $x_2 = (3, 1)$, $y_1 = 1, y_2 = 0$とした時,クロスエントロピーのヤコビ行列を計算せよ
+  \item 上記の場合のヘッセ行列を求めよ.
+  \item 上記の場合にニュートン法を実装せよ
+\end{itemize}
+\end{frame}
+
+\begin{frame}{ロジスティック回帰の分離平面}
+\begin{itemize}
+\item ロジスティック回帰は線形分離される.
+  \item $\frac{1}{1 + e^{-wx}} >= 0.5$を変形すると
+  \item $2 \ge 1 + e^{-wx}$
+  \item $e^{-wx} \le 1$
+  \item $-wx \le 0$
+\end{itemize}
+非線形な分離はできないことに注意してください.
+\end{frame}
+
+\begin{frame}{過剰適合と過小適合}
+\begin{itemize}
+\item データポイントの数に比べて入力の変数が多い場合
+  \item 実際にはラベルの識別に寄与しないような変数$x_d$のパラメータ$w_{\cdot,k}$値はゼロでなくなる.
+  \item 「7」画像と「9」画像の識別で1万弱のデータポイント数に対して、
+     784($=28\times28$)変数だとやや高次元です。
+  \item 実際には周辺のピクセルはラベルの分類に寄与しないはず
+訓練データに対して損失の平均を不当に小さくするあまり、未知のデータに対して予測が上手くいかなくなるような現象を \textbf{過剰適合} という.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{正則化}
+\begin{itemize}
+\item 損失に、次のような罰則項をつけてしまうもの
+\item 特に、$||w||_1$という罰則項による正則化を$l^1$正則化といいます。
+$$
+\displaystyle \ell(w;\mathcal{D}) = \frac{1}{n}\sum_{i=1}^{n}l(w;y_i)+\alpha||w||_1
+$$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{過小適合}
+本来ラベルの識別に必要だったはずの変数を準備しないと、訓練データに対しての損失の平均も大きいまま
+このような現象を \textbf{過小適合} といいます。
+正則化ハイパーパラメータの値を大きく取り過ぎてしまうと、このような現象を招くきっかけになるので注意が必要です
+\end{frame}
+
+\begin{frame}{損失と過剰適合・過小適合の関係}
+\begin{itemize}
+\item 過剰適合 ⇒ 未知データでの損失の平均 $>>$ 学習時の損失の平均
+\item 過小適合 ⇒ 学習時の損失が大きい。
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{モデル評価方法}
+以下の2種類が用いられています。
+\begin{itemize}
+\item hold-out検証：単純に訓練データとテストデータに分け、テストデータで一回だけ推定を評価する方法。
+\item cross-validation：データを$K$個に分割し、そのうちの1個をテストデータ、残りを学習データとして$K$回評価を繰り返す方法。
+\end{itemize}
+
+hold-out検証はcross-validationに比べ計算量は低いですが、データの偏りに影響されやすい傾向があります。
+\end{frame}
+
+\begin{frame}{モデル評価指標(二値分類の場合)}
+\begin{itemize}
+\item 普通は予測が正しいかを考える(正答率)
+\item データが偏っている場合、片方を答え続けると正答率が極めて高い
+\item 本来ほしいものに合わせて指標を変更する必要がある
+  \item AUC
+\end{itemize}
+\end{frame}
+
+\begin{frame}{演習}
+\begin{itemize}
+\item Sofmax回帰を実装
+  \item sklearnを使いSoftmax回帰をする.
+    \item データはirisを使う.
+  \item sklearnの乳がんのデータを使い,自作のロジスティック回帰で実装しよう.
+\end{itemize}
+\end{frame}

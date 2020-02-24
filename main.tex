@@ -1,0 +1,73 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{zxjatype}
+\usepackage[ipa]{zxjafont}
+\usetheme{metropolis}           % Use metropolis theme
+
+\usepackage{ascmac}
+\metroset{numbering=fraction}
+\usepackage{my-default}
+
+\title{MetropolisでDeepLearningいろいろ数式を書いてみる}
+\author{竹川}
+
+\usepackage{url}
+
+%% おまじない
+\newlength{\mytotalwidth}
+\mytotalwidth=\dimexpr\linewidth-5mm
+\newlength{\mycolumnwidth}
+\mycolumnwidth=\dimexpr\mytotalwidth-5mm
+
+%% ソースコードキャプション設定
+\usepackage{minted}
+\usemintedstyle{monokai}
+\definecolor{LightGray}{gray}{0.9}
+
+
+%% tikz設定
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\tikzset{%
+  >={Latex[width=2mm,length=2mm]},
+  % Specifications for style of nodes:
+            base/.style = {rectangle, rounded corners, draw=black,
+                           minimum width=4cm, minimum height=1cm,
+                           text centered, font=\sffamily},
+  activityStarts/.style = {base, fill=blue!30},
+       startstop/.style = {base, fill=red!30},
+    activityRuns/.style = {base, fill=green!30},
+         process/.style = {base, minimum width=2.5cm, fill=orange!15,
+                           font=\ttfamily},
+}
+
+\date{\today}
+\begin{document}
+\maketitle
+
+あああ
+
+\end{document}
+
+%\input{intro.tex}
+%\input{math_programing.tex}
+%\input{math_intro}
+%\input{softmax}
+%\input{deep.tex}
+%\input{pytorch_intro.tex}
+
+
+%\section{Graphの紹介}
+%\begin{frame}{Graphの定義}
+%\begin{itemize}
+%\item NodeとEdgeの組 $G=(V, E)$ のこと.
+%\item VはNodeの集合
+%\item EはNodeとNodeの間のEdgeの集合
+%\item Edgeに向きがある場合: \textbf{有向グラフ}
+%\item Edgeに向きがない場合: \textbf{無向グラフ}
+%\end{itemize}
+%\centering
+%%\fbox{
+%\includegraphics[width=80pt]{pic/graph.png}
+%%\par\indicatewidth{right}
+%\end{frame}
